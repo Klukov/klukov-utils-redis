@@ -1,0 +1,50 @@
+plugins {
+    id 'java'
+    id 'groovy'
+    id 'com.diffplug.spotless' version '6.25.0'
+}
+
+group 'org.klukov'
+version '1.0-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.34'
+    annotationProcessor 'org.projectlombok:lombok:1.18.34'
+    implementation 'org.slf4j:slf4j-api:2.0.16'
+
+    testImplementation 'org.slf4j:slf4j-simple:2.0.16'
+    testImplementation 'org.spockframework:spock-core:2.4-M4-groovy-3.0'
+    testImplementation 'org.codehaus.groovy:groovy:3.0.22'
+    testImplementation 'org.awaitility:awaitility:4.2.2'
+}
+
+spotless {
+    java {
+        importOrder()
+        removeUnusedImports()
+        cleanthat()
+        googleJavaFormat().aosp()
+        formatAnnotations()
+    }
+    groovy {
+        importOrder()
+        indentWithSpaces()
+        endWithNewline()
+        trimTrailingWhitespace()
+        excludeJava()
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
