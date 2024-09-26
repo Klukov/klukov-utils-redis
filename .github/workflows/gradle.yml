@@ -3,7 +3,7 @@ name: limit-controller gradle build
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
 
 jobs:
