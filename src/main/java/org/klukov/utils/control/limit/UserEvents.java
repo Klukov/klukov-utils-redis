@@ -1,4 +1,4 @@
-package org.klukov.utils.control;
+package org.klukov.utils.control.limit;
 
 import java.time.Instant;
 import java.util.Collection;
