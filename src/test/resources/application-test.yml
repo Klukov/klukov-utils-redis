@@ -1,0 +1,15 @@
+spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+klukov:
+  utils:
+    redis:
+      limiter:
+        limit-period-in-hours: 24
+        redis-key-prefix: test-klukov-utils-redis-limiter
+      lock:
+        simple:
+          redis-prefix: test-klukov-utils-redis-lock-simple

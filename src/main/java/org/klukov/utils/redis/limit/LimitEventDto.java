@@ -1,4 +1,4 @@
-package org.klukov.utils.control.limit;
+package org.klukov.utils.redis.limit;
 
 import java.time.Instant;
 import lombok.Builder;

@@ -1,8 +1,10 @@
-package org.klukov.utils.control.limit
+package org.klukov.utils.redis
 
 import org.testcontainers.containers.GenericContainer
+import org.testcontainers.spock.Testcontainers
 import spock.lang.Specification
 
+@Testcontainers
 class RedisTestSpecification extends Specification {
 
     static protected GenericContainer redis = new GenericContainer<>("redis:7.4")
@@ -10,6 +12,8 @@ class RedisTestSpecification extends Specification {
 
     def setupSpec() {
         redis.start()
+        System.setProperty("spring.data.redis.host", redis.getHost())
+        System.setProperty("spring.data.redis.port", redis.getMappedPort(6379).toString())
     }
 
     def cleanupSpec() {
