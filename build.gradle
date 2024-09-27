@@ -19,20 +19,6 @@ repositories {
     mavenCentral()
 }
 
-sourceSets {
-    test {
-        java {
-            srcDirs = ['src/test/java']
-        }
-        groovy {
-            srcDirs = ['src/test/groovy']
-        }
-        resources {
-            srcDirs = ['src/test/resources']
-        }
-    }
-}
-
 dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.34'
     annotationProcessor 'org.projectlombok:lombok:1.18.34'
@@ -67,6 +53,4 @@ spotless {
 
 test {
     useJUnitPlatform()
-    testClassesDirs += sourceSets.test.output.classesDirs
-    classpath += sourceSets.test.output
 }

@@ -2,7 +2,6 @@ package org.klukov.utils.redis.lock
 
 import java.time.Duration
 import java.util.concurrent.TimeUnit
-import org.klukov.utils.redis.KlukovUtilsRedisTestApp
 import org.klukov.utils.redis.RedisTestSpecification
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -11,7 +10,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.testcontainers.shaded.org.awaitility.Awaitility
 import org.testcontainers.spock.Testcontainers
 
-@SpringBootTest(classes = KlukovUtilsRedisTestApp.class)
+@SpringBootTest
 @ActiveProfiles("test")
 @Testcontainers
 class SimpleRedisLockTest extends RedisTestSpecification {

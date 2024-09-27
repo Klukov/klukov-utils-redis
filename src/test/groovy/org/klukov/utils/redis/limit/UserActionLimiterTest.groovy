@@ -1,7 +1,6 @@
 package org.klukov.utils.redis.limit
 
 import java.time.Instant
-import org.klukov.utils.redis.KlukovUtilsRedisTestApp
 import org.klukov.utils.redis.RedisTestSpecification
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -10,7 +9,7 @@ import org.testcontainers.spock.Testcontainers
 import spock.lang.Ignore
 
 @Testcontainers
-@SpringBootTest(classes = KlukovUtilsRedisTestApp.class)
+@SpringBootTest
 @ActiveProfiles("test")
 class UserActionLimiterTest extends RedisTestSpecification {
 
