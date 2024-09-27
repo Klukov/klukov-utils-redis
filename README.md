@@ -1,6 +1,6 @@
-# LIMIT CONTROLLER
+# klukov-utils-redis
 
-redis based consistent action limiter 
+Simple utils for Redis
 
 
 ### Start redis:

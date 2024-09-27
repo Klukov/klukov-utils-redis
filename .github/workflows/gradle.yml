@@ -1,4 +1,4 @@
-name: limit-controller gradle build
+name: klukov-utils-redis gradle build
 
 on:
   push:
