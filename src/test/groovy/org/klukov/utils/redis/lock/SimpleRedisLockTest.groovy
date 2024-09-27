@@ -1,7 +1,11 @@
 package org.klukov.utils.redis.lock
 
 import java.time.Duration
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.CyclicBarrier
+import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 import org.klukov.utils.redis.RedisTestSpecification
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -17,7 +21,7 @@ class SimpleRedisLockTest extends RedisTestSpecification {
 
     private static final String KEY1 = "KEY-1"
     private static final String KEY2 = "KEY-2"
-    private static final Duration DEFAULT_DURATION = Duration.ofSeconds(2)
+    private static final Duration DEFAULT_DURATION = Duration.ofSeconds(1)
 
     @Autowired
     RedisTemplate<String, String> template
@@ -37,6 +41,7 @@ class SimpleRedisLockTest extends RedisTestSpecification {
         when:
         def acquireFirstKey = sub.acquire(KEY1, DEFAULT_DURATION)
         def value = template.opsForValue().get(properties.redisPrefix() + KEY1)
+        print("REDIS PREFIX: " + properties.redisPrefix())
 
         then:
         acquireFirstKey
@@ -49,16 +54,16 @@ class SimpleRedisLockTest extends RedisTestSpecification {
         def acquireSecondKey = sub.acquire(KEY2, DEFAULT_DURATION)
         def acquireFirstKeySecondTime = sub.acquire(KEY1, DEFAULT_DURATION)
         Awaitility.await()
-                .atMost(3, TimeUnit.SECONDS)
-                .pollDelay(1600, TimeUnit.MILLISECONDS)
-                .pollInterval(200, TimeUnit.MILLISECONDS)
+                .atMost(2, TimeUnit.SECONDS)
+                .pollDelay(800, TimeUnit.MILLISECONDS)
+                .pollInterval(50, TimeUnit.MILLISECONDS)
                 .until(() -> sub.acquire(KEY2, DEFAULT_DURATION))
         def acquireFirstKeyAfterRelease = sub.acquire(KEY1, DEFAULT_DURATION)
 
         then:
         acquireFirstKey
         acquireSecondKey
-        ! acquireFirstKeySecondTime
+        !acquireFirstKeySecondTime
         acquireFirstKeyAfterRelease
     }
 
@@ -71,7 +76,7 @@ class SimpleRedisLockTest extends RedisTestSpecification {
 
         then:
         acquireFirstKey
-        ! acquireFirstKeySecondTime
+        !acquireFirstKeySecondTime
         releaseFirstKey
         acquireFirstKeyAfterRelease
 
@@ -84,7 +89,7 @@ class SimpleRedisLockTest extends RedisTestSpecification {
         def release = sub.release(KEY1)
 
         then:
-        ! release
+        !release
     }
 
     def "should release return false if lock does not exist after release"() {
@@ -96,6 +101,31 @@ class SimpleRedisLockTest extends RedisTestSpecification {
         then:
         acquire
         release
-        ! secondRelease
+        !secondRelease
+    }
+
+    def "should only one thread acquire a lock in multithreaded environment"() {
+        given:
+        int numberOfThreads = 32
+        def beforeProcessingBarrier = new CyclicBarrier(numberOfThreads + 1)
+        def afterProcessingLatch = new CountDownLatch(numberOfThreads)
+        def executor = Executors.newFixedThreadPool(numberOfThreads)
+        def lockAcquiredCount = new AtomicInteger(0)
+
+        when:
+        (1..numberOfThreads).each {
+            executor.submit {
+                beforeProcessingBarrier.await()
+                if (sub.acquire(KEY1, DEFAULT_DURATION)) {
+                    lockAcquiredCount.incrementAndGet()
+                }
+                afterProcessingLatch.countDown()
+            }
+        }
+        beforeProcessingBarrier.await()
+        afterProcessingLatch.await()
+
+        then:
+        lockAcquiredCount.get() == 1
     }
 }

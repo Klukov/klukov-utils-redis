@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserActionLimiter {
 
-    private final UserActionLimiterProperties userActionLimiterProperties;
+    private final UserActionLimiterProperties properties;
     private final RedisTemplate<String, String> template;
 
     public boolean isActionAllowed(LimitEvent limitEvent, int currentLimit) {

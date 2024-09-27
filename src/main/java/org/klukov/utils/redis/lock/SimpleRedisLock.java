@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class SimpleRedisLock {
     private static final String LOCK_VALUE = "lock";
 
-    private final SimpleRedisLockProperties simpleRedisLockProperties;
+    private final SimpleRedisLockProperties properties;
     private final RedisTemplate<String, String> template;
 
     /**
@@ -18,8 +18,8 @@ public class SimpleRedisLock {
      * @throws RedisLockException in case when redisTemplate return null value, which means that
      *     Command was used in transaction or pipeline
      */
-    public boolean acquire(String name, Duration duration) {
-        var result = template.opsForValue().setIfAbsent(getKey(name), LOCK_VALUE, duration);
+    public boolean acquire(String name, Duration timeout) {
+        var result = template.opsForValue().setIfAbsent(getKey(name), LOCK_VALUE, timeout);
         if (result == null) {
             throw new RedisLockException(
                     "Redis unexpectedly returned null. Command was used in transaction or pipeline");
@@ -36,6 +36,6 @@ public class SimpleRedisLock {
     }
 
     private String getKey(String name) {
-        return simpleRedisLockProperties.redisPrefix() + name;
+        return properties.redisPrefix() + name;
     }
 }
