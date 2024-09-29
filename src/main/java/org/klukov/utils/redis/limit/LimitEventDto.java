@@ -9,5 +9,6 @@ import lombok.Value;
 @Builder
 public class LimitEventDto implements LimitEvent {
     @NonNull String userId;
+    @NonNull String eventId;
     @NonNull Instant timestamp;
 }

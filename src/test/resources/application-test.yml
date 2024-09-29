@@ -8,7 +8,8 @@ klukov:
   utils:
     redis:
       limiter:
-        limit-period-in-hours: 24
+        limit-duration: P1D
+        max-confirmation-duration: PT15M
         redis-key-prefix: test-klukov-utils-redis-limiter
       lock:
         simple:
