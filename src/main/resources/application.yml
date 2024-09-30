@@ -1,0 +1,10 @@
+klukov:
+  utils:
+    redis:
+      limiter:
+        limit-duration: P1D
+        max-confirmation-duration: PT5M
+        redis-key-prefix: klukov-utils-redis-limiter
+      lock:
+        simple:
+          redis-prefix: klukov-utils-redis-lock-simple

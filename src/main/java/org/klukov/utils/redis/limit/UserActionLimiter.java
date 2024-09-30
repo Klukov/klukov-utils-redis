@@ -1,12 +1,11 @@
 package org.klukov.utils.redis.limit;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Service;
-import java.util.List;
 
 @Service
 @Slf4j
@@ -20,7 +19,9 @@ public class UserActionLimiter {
     private final RedisScript<Boolean> confirmationScript;
 
     /**
-     * @return true if operation is allowed, otherwise return false
+     * @return true if number of confirmed operation and non-expired unconfirmed operation are less
+     *     than current limit. Otherwise, return false. In the case when event-id is duplicated
+     *     return false.
      */
     public boolean isActionAllowed(LimitEvent limitEvent, int currentLimit) {
         var currentTimestamp = timeProvider.getCurrentEpoch();
@@ -28,14 +29,16 @@ public class UserActionLimiter {
         var pendingKey = getPendingKey(flooredTimestamp, limitEvent.getUserId());
         var finishedKey = getFinishedKey(flooredTimestamp, limitEvent.getUserId());
         List<String> keys = List.of(finishedKey, pendingKey);
-        List<String> args = List.of(
-                String.valueOf(currentLimit),
-                limitEvent.getEventId(),
-                String.valueOf(getEventExpirationTime(currentTimestamp)),
-                String.valueOf(currentTimestamp),
-                String.valueOf(getRedisKeysTtl())
-        );
-        return Boolean.TRUE.equals(template.execute(pendingScript, keys, args).blockFirst());
+        List<String> args =
+                List.of(
+                        String.valueOf(currentLimit),
+                        limitEvent.getEventId(),
+                        String.valueOf(getEventExpirationTime(currentTimestamp)),
+                        String.valueOf(currentTimestamp),
+                        String.valueOf(getRedisKeysTtl()));
+        log.debug("isActionAllowed request to redis: keys: {}, args: {})", keys, args);
+        return Boolean.TRUE.equals(
+                template.execute(pendingScript, keys, args).single(false).block());
     }
 
     private long getRedisKeysTtl() {
@@ -43,7 +46,7 @@ public class UserActionLimiter {
     }
 
     private long getEventExpirationTime(long currentTimestamp) {
-        return currentTimestamp + properties.maxConfirmationDuration().toSeconds();
+        return currentTimestamp + properties.maxConfirmationDuration().toMillis();
     }
 
     private String getPendingKey(long flooredTimestamp, String userId) {
@@ -65,7 +68,14 @@ public class UserActionLimiter {
      * @return true if marking event as processed finished successfully, otherwise return false
      */
     public boolean actionProcessed(LimitEvent limitEvent) {
-        return false;
+        var currentTimestamp = timeProvider.getCurrentEpoch();
+        var flooredTimestamp = floorTimestamp(currentTimestamp);
+        var pendingKey = getPendingKey(flooredTimestamp, limitEvent.getUserId());
+        var finishedKey = getFinishedKey(flooredTimestamp, limitEvent.getUserId());
+        List<String> keys = List.of(finishedKey, pendingKey);
+        List<String> args = List.of(limitEvent.getEventId(), String.valueOf(getRedisKeysTtl()));
+        log.debug("actionProcessed request to redis: keys: {}, args: {})", keys, args);
+        return Boolean.TRUE.equals(
+                template.execute(confirmationScript, keys, args).single(false).block());
     }
-
 }

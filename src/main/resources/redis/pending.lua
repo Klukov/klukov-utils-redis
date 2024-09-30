@@ -23,7 +23,7 @@ local finished_transactions = tonumber(redis.call('GET', finished_key) or '0')
 
 -- Step 2: Check if finished transactions exceed or meet the limit
 if finished_transactions >= limit then
-    return 0
+    return false
 end
 
 -- Step 3: Get pending transactions list
@@ -38,10 +38,15 @@ local cleaned_pending = cleanup_expired(pending_transactions, current_timestamp)
 
 -- Step 5: Check if the current number of finished and pending transactions exceeds the limit
 if (finished_transactions + #cleaned_pending) >= limit then
-    return 0
+    return false
 end
 
--- Step 6: Add new pending transaction
+-- Step 6: Add new pending transaction if not duplicate
+for _, transaction in ipairs(cleaned_pending) do
+    if transaction.event == new_event_id then
+        return false
+    end
+end
 table.insert(cleaned_pending, {event = new_event_id, expiration = new_event_expiration})
 
 -- Step 7: Update the pending transactions list
@@ -50,4 +55,4 @@ redis.call('SET', pending_key, new_pending_json)
 redis.call('EXPIRE', pending_key, key_ttl)
 
 -- Return success
-return 1
+return true

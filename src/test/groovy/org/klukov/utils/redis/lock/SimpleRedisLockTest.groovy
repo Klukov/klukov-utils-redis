@@ -33,8 +33,9 @@ class SimpleRedisLockTest extends RedisTestSpecification {
     SimpleRedisLockProperties properties
 
     def cleanup() {
-        template.opsForValue().getAndDelete(properties.redisPrefix() + KEY1)
-        template.opsForValue().getAndDelete(properties.redisPrefix() + KEY2)
+        template.keys('*').each {
+            template.opsForValue().getAndDelete(it)
+        }
     }
 
     def "should acquire new lock and lock should be with proper prefix"() {

@@ -8,9 +8,12 @@ klukov:
   utils:
     redis:
       limiter:
-        limit-duration: P1D
-        max-confirmation-duration: PT15M
+        limit-duration: PT5S
+        max-confirmation-duration: PT1S
         redis-key-prefix: test-klukov-utils-redis-limiter
       lock:
         simple:
           redis-prefix: test-klukov-utils-redis-lock-simple
+
+logging.level.io.lettuce.core.protocol: INFO
+logging.level.org.klukov.utils: TRACE
