@@ -87,7 +87,6 @@ class UserActionLimiterTest extends RedisTestSpecification {
         assertLimit(result1, result2, result3)
 
         then:
-        printRedis()
         def result4 = sub.isActionAllowed(simpleUserAction(), 2)
         def result5 = sub.isActionAllowed(simpleUserAction(), 2)
         def result6 = sub.isActionAllowed(simpleUserAction(), 2)
@@ -159,13 +158,6 @@ class UserActionLimiterTest extends RedisTestSpecification {
         def result5 = sub.isActionAllowed(simpleUserAction(), 2)
         def result6 = sub.isActionAllowed(simpleUserAction(), 2)
         assertLimit(result4, result5, result6)
-    }
-
-    private printRedis() {
-        template.keys('*').each {
-            def value = template.opsForValue().get(it)
-            println("KEY: $it : VALUE: $value")
-        }
     }
 
     private void mockTimeWithStepOfMillis(int stepSize = 1) {
