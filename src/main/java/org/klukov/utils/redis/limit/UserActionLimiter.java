@@ -50,12 +50,10 @@ public class UserActionLimiter {
     }
 
     private String getPendingKey(long flooredTimestamp, String userId) {
-        // KEY = "<prefix>:pending:<ltd>:<userId>"
         return properties.redisKeyPrefix() + ":pending:" + flooredTimestamp + ":" + userId;
     }
 
     private String getFinishedKey(long flooredTimestamp, String userId) {
-        // KEY = "<prefix>:finished:<ltd>:<userId>"
         return properties.redisKeyPrefix() + ":finished:" + flooredTimestamp + ":" + userId;
     }
 
