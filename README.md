@@ -1,7 +1,10 @@
 # klukov-utils-redis
-
 Simple distributed Java utils based on Redis
 
+### Java utils project:
+https://github.com/Klukov/klukov-utils  
+  
+  
 ## SETUP
 All tests run on test containers. However, if you need to test it manually use below commands.  
   
