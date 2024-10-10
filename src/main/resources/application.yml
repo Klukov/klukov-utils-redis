@@ -8,3 +8,5 @@ klukov:
       lock:
         simple:
           redis-prefix: klukov-utils-redis-lock-simple
+        context:
+          redis-prefix: klukov-utils-redis-lock-context
