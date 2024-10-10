@@ -1,4 +1,4 @@
-package org.klukov.utils.redis.lock.simple;
+package org.klukov.utils.redis.lock;
 
 public class RedisLockException extends RuntimeException {
 

@@ -15,8 +15,8 @@ public class UserActionLimiter {
     private final UserActionLimiterProperties properties;
     private final ReactiveRedisTemplate<String, String> template;
     private final UserActionLimiterTimeProvider timeProvider;
-    private final RedisScript<Boolean> pendingScript;
-    private final RedisScript<Boolean> confirmationScript;
+    private final RedisScript<Boolean> userLimiterPendingScript;
+    private final RedisScript<Boolean> userLimiterConfirmationScript;
 
     /**
      * @return true if number of confirmed operation and non-expired unconfirmed operation are less
@@ -38,7 +38,7 @@ public class UserActionLimiter {
                         String.valueOf(getRedisKeysTtl()));
         log.debug("isActionAllowed request to redis: keys: {}, args: {})", keys, args);
         return Boolean.TRUE.equals(
-                template.execute(pendingScript, keys, args).single(false).block());
+                template.execute(userLimiterPendingScript, keys, args).single(false).block());
     }
 
     private long getRedisKeysTtl() {
@@ -74,6 +74,6 @@ public class UserActionLimiter {
         List<String> args = List.of(limitEvent.getEventId(), String.valueOf(getRedisKeysTtl()));
         log.debug("actionProcessed request to redis: keys: {}, args: {})", keys, args);
         return Boolean.TRUE.equals(
-                template.execute(confirmationScript, keys, args).single(false).block());
+                template.execute(userLimiterConfirmationScript, keys, args).single(false).block());
     }
 }

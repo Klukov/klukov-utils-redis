@@ -2,6 +2,7 @@ package org.klukov.utils.redis.lock.simple;
 
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
+import org.klukov.utils.redis.lock.RedisLockException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 

@@ -12,13 +12,13 @@ import org.springframework.data.redis.core.script.RedisScript;
 class UserActionLimiterConfig {
 
     @Bean
-    public RedisScript<Boolean> confirmationScript() {
+    public RedisScript<Boolean> userLimiterConfirmationScript() {
         return RedisScript.of(
                 new ClassPathResource("redis/user-limiter-confirm.lua"), Boolean.class);
     }
 
     @Bean
-    public RedisScript<Boolean> pendingScript() {
+    public RedisScript<Boolean> userLimiterPendingScript() {
         return RedisScript.of(
                 (new ClassPathResource("redis/user-limiter-pending.lua")), Boolean.class);
     }

@@ -4,5 +4,5 @@ import java.time.Duration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "klukov.utils.redis.limiter")
-public record UserActionLimiterProperties(
+record UserActionLimiterProperties(
         Duration limitDuration, Duration maxConfirmationDuration, String redisKeyPrefix) {}

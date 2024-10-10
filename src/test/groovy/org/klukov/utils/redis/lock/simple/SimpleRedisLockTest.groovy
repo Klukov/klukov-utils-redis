@@ -1,6 +1,5 @@
 package org.klukov.utils.redis.lock.simple
 
-
 import java.time.Duration
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.CyclicBarrier
@@ -10,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import org.klukov.utils.redis.RedisTestSpecification
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.test.context.ActiveProfiles
 import org.testcontainers.shaded.org.awaitility.Awaitility
 import org.testcontainers.spock.Testcontainers
@@ -25,7 +24,7 @@ class SimpleRedisLockTest extends RedisTestSpecification {
     private static final Duration DEFAULT_DURATION = Duration.ofSeconds(1)
 
     @Autowired
-    RedisTemplate<String, String> template
+    StringRedisTemplate template
 
     @Autowired
     SimpleRedisLock sub
@@ -81,9 +80,6 @@ class SimpleRedisLockTest extends RedisTestSpecification {
         !acquireFirstKeySecondTime
         releaseFirstKey
         acquireFirstKeyAfterRelease
-
-        cleanup:
-        template.opsForValue().getAndDelete(properties.redisPrefix() + KEY1)
     }
 
     def "should release return false if lock does not exist"() {
