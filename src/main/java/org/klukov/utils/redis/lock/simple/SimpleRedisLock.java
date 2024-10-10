@@ -1,4 +1,4 @@
-package org.klukov.utils.redis.lock;
+package org.klukov.utils.redis.lock.simple;
 
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;

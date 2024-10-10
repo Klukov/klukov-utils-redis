@@ -13,12 +13,14 @@ class UserActionLimiterConfig {
 
     @Bean
     public RedisScript<Boolean> confirmationScript() {
-        return RedisScript.of(new ClassPathResource("redis/confirm.lua"), Boolean.class);
+        return RedisScript.of(
+                new ClassPathResource("redis/user-limiter-confirm.lua"), Boolean.class);
     }
 
     @Bean
     public RedisScript<Boolean> pendingScript() {
-        return RedisScript.of((new ClassPathResource("redis/pending.lua")), Boolean.class);
+        return RedisScript.of(
+                (new ClassPathResource("redis/user-limiter-pending.lua")), Boolean.class);
     }
 
     @Bean
