@@ -1,22 +1,27 @@
 package org.klukov.utils.redis
 
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.DynamicPropertyRegistry
+import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.spock.Testcontainers
+import spock.lang.Shared
 import spock.lang.Specification
 
 @Testcontainers
+@ActiveProfiles("test")
+@SpringBootTest
 class RedisTestSpecification extends Specification {
 
+    @Shared
     static protected GenericContainer redis = new GenericContainer<>("redis:7.4")
             .withExposedPorts(6379)
 
-    def setupSpec() {
+    @DynamicPropertySource
+    static void initRedis(DynamicPropertyRegistry registry) {
         redis.start()
-        System.setProperty("spring.data.redis.host", redis.getHost())
-        System.setProperty("spring.data.redis.port", redis.getMappedPort(6379).toString())
-    }
-
-    def cleanupSpec() {
-        redis.stop()
+        registry.add("spring.data.redis.host", () -> redis.getHost())
+        registry.add("spring.data.redis.port", () -> redis.getMappedPort(6379).toString())
     }
 }

@@ -8,15 +8,9 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import org.klukov.utils.redis.RedisTestSpecification
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.redis.core.StringRedisTemplate
-import org.springframework.test.context.ActiveProfiles
 import org.testcontainers.shaded.org.awaitility.Awaitility
-import org.testcontainers.spock.Testcontainers
 
-@SpringBootTest
-@ActiveProfiles("test")
-@Testcontainers
 class ContextRedisLockTest extends RedisTestSpecification {
 
     private static final String KEY1 = "KEY-1"

@@ -4,14 +4,8 @@ import java.time.Instant
 import org.klukov.utils.redis.RedisTestSpecification
 import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.redis.core.RedisTemplate
-import org.springframework.test.context.ActiveProfiles
-import org.testcontainers.spock.Testcontainers
+import org.springframework.data.redis.core.StringRedisTemplate
 
-@Testcontainers
-@SpringBootTest
-@ActiveProfiles("test")
 class UserActionLimiterTest extends RedisTestSpecification {
 
     private static long NOW = 1727691450001
@@ -20,7 +14,7 @@ class UserActionLimiterTest extends RedisTestSpecification {
     UserActionLimiter sub
 
     @Autowired
-    RedisTemplate<String, String> template
+    StringRedisTemplate template
 
     @SpringBean
     UserActionLimiterTimeProvider timeProvider = Mock()
@@ -34,7 +28,6 @@ class UserActionLimiterTest extends RedisTestSpecification {
     def "should allow actions up to the limit"() {
         when:
         mockTimeWithStepOfMillis()
-        println("CURRENT TIME: " + System.currentTimeMillis())
         def result1 = sub.isActionAllowed(simpleUserAction(), 2)
         def result2 = sub.isActionAllowed(simpleUserAction(), 2)
         def result3 = sub.isActionAllowed(simpleUserAction(), 2)
