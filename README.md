@@ -25,6 +25,14 @@ Simple lock is based on simple redis command:
 which returns "OK" when lock is acquired, or (nil) when key already exists.  
 Spring redis template translates this to true or false respectively.
 
+## Context lock
+The Context lock provides a mechanism for managing distributed locks with contextual awareness.
+In cases where an application goes down while holding a lock, we want the 'winning' process to be able to reacquire the lock. 
+Using a simple lock mechanism, the lock cannot be acquired again until it expires, which might lead to conflicts or loosing data.
+To solve this problem, a Lua script was created to check the context value before adding a key, as in a simple lock. 
+If the lock exists and has the same context, the ```acquire``` method returns ```true``` and refreshes the expiration time. 
+However, if the context is different, the expiration time is not refreshed.
+
 ## User action limiter
 User action limiter is focused on data consistency. The design is made to keep data consistency.  
 The limit can never be exceeded.  
